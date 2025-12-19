@@ -9,6 +9,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
+.ticks{
+font-size:11px;
+margin-left:4px;
+color:#8696a0;
+}
+.ticks.read{
+color:#53bdeb; /* WhatsApp blue */
+}
+.time-wrap{
+display:flex;
+justify-content:flex-end;
+align-items:center;
+gap:2px;
+}
+  
 :root{
 --bg:#0b141a;--panel:#202c33;--sent:#005c4b;--recv:#202c33;
 --text:#e9edef;--sub:#8696a0;--accent:#00a884;
@@ -223,7 +238,10 @@ b.className="bubble "+(m.s===me?"sent":"received");
 b.innerHTML=`
 <div class="sender">${m.s}</div>
 <div class="text">${m.x}</div>
-<div class="time">${m.t}</div>
+<div class="time-wrap">
+  <span class="time">${m.t}</span>
+  ${m.s===me ? `<span class="ticks">✔✔</span>` : ``}
+</div>
 `;
 
 const f=m.x.match(/((IMG|VID|PTT|STK)-\d+-WA\d+\.\w+|\S+\.webp)/i)?.[0];
@@ -326,11 +344,23 @@ fs.appendChild(c);fs.style.display="flex";
 }
 function closeFS(){fs.style.display="none"}
 
-/* PDF */
+/* PDF — FIXED */
 function exportPDF(){
+if(!chat.children.length){alert("No chat loaded");return;}
 const clone=chat.cloneNode(true);
-clone.querySelectorAll("video,button,input").forEach(e=>e.remove());
-html2pdf().from(clone).set({filename:"WhatsAppChat.pdf"}).save();
+clone.querySelectorAll("video,audio,button,input,.fs-btn,.voice").forEach(e=>e.remove());
+clone.style.background="#efeae2";
+clone.style.color="#111b21";
+clone.style.padding="10px";
+
+html2pdf().set({
+margin:8,
+filename:"WhatsApp-Chat.pdf",
+image:{type:"jpeg",quality:0.98},
+html2canvas:{scale:2,backgroundColor:"#efeae2"},
+jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}
+}).from(clone).save();
+
 menu.classList.remove("show");
 }
 
@@ -343,6 +373,18 @@ document.getElementById("wallpaperPicker").onchange=e=>{
 chat.style.backgroundImage=`url(${URL.createObjectURL(e.target.files[0])})`;
 menu.classList.remove("show");
 };
+/* BLUE TICKS WHEN CHAT IS VIEWED */
+function markRead(){
+document.querySelectorAll(".sent .ticks").forEach(t=>{
+t.classList.add("read");
+});
+}
+
+// Mark as read shortly after load
+setTimeout(markRead, 800);
+
+// Also mark when user scrolls
+chat.addEventListener("scroll", markRead);
 </script>
 </body>
 </html>
