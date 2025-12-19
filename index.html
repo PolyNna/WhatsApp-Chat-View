@@ -6,32 +6,17 @@
 <title>WhatsApp Chat Viewer</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-.ticks{
-font-size:11px;
-margin-left:4px;
-color:#8696a0;
-}
-.ticks.read{
-color:#53bdeb; /* WhatsApp blue */
-}
-.time-wrap{
-display:flex;
-justify-content:flex-end;
-align-items:center;
-gap:2px;
-}
-  
 :root{
 --bg:#0b141a;--panel:#202c33;--sent:#005c4b;--recv:#202c33;
---text:#e9edef;--sub:#8696a0;--accent:#00a884;
+--text:#e9edef;--sub:#8696a0;--accent:#00a884;--btn:#ffffff;
 }
 .light{
 --bg:#efeae2;--panel:#ffffff;--sent:#dcf8c6;--recv:#ffffff;
---text:#111b21;--sub:#667781;
+--text:#111b21;--sub:#667781;--btn:#111b21;
 }
+
 body{
 margin:0;display:flex;justify-content:center;
 font-family:Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)
@@ -46,27 +31,24 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 }
-.menu-btn{
-background:none;border:none;color:white;font-size:20px;cursor:pointer
+.header button{
+background:none;border:none;font-size:20px;cursor:pointer;
+color:var(--btn)
 }
 
-/* DROPDOWN */
+/* MENU */
 .dropdown{
-position:absolute;
-top:56px;
-right:10px;
-width:320px;
-background:var(--panel);
-border-radius:10px;
-padding:10px;
-display:none;
-z-index:1000;
-box-shadow:0 10px 30px rgba(0,0,0,.5)
+position:absolute;top:56px;right:10px;width:320px;
+background:var(--panel);border-radius:10px;
+padding:10px;display:none;z-index:1000
 }
 .dropdown.show{display:block}
 
 .controls-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
-button{background:var(--accent);border:none;border-radius:6px;padding:6px 10px;cursor:pointer}
+button.action{
+background:var(--accent);border:none;border-radius:6px;
+padding:6px 10px;cursor:pointer;color:white
+}
 .search-box{flex:1;padding:6px;border-radius:6px;border:none}
 
 /* CHAT */
@@ -80,39 +62,42 @@ background:var(--bg);background-size:cover;background-position:center
 .sender{font-size:12px;font-weight:bold;color:#53bdeb}
 .text{white-space:pre-wrap}
 .time{font-size:11px;color:var(--sub);text-align:right}
+.ticks{font-size:12px;color:#53bdeb;text-align:right}
 
 /* MEDIA */
 .media{max-width:100%;border-radius:6px;margin-top:6px}
 .media-wrap{position:relative}
 .fs-btn{
 position:absolute;top:6px;right:6px;
-background:rgba(0,0,0,.6);color:white;border:none
+background:rgba(0,0,0,.6);color:white;border:none;border-radius:4px
 }
-.sticker{
-max-width:160px;
-margin-top:6px;
-}
+.sticker{max-width:160px;margin-top:6px}
 
 /* VOICE */
 .voice{
 display:flex;align-items:center;gap:6px;
 background:#1f2c33;border-radius:20px;padding:6px;margin-top:6px
 }
-.voice button{background:none;color:white;border:none;font-size:14px}
-.voice input[type=range]{
-flex:1;height:4px;border-radius:2px;background:#555
+.voice button{
+background:none;border:none;color:#00a884;
+font-weight:bold;cursor:pointer
 }
-.voice input[type=range]::-webkit-slider-thumb{
-appearance:none;width:12px;height:12px;border-radius:50%;
-background:#00a884
-}
-.voice-time{font-size:11px;color:#ccc}
+.voice input[type=range]{flex:1}
 
 /* DATE */
 .date{
 margin:10px auto;background:#111b21;color:white;
-font-size:12px;padding:4px 10px;border-radius:8px;width:fit-content
+font-size:12px;padding:4px 10px;border-radius:8px
 }
+
+/* SEARCH */
+.search-results{
+background:#111b21;max-height:200px;overflow-y:auto;
+border-radius:6px;margin-top:6px
+}
+.search-item{padding:6px;border-bottom:1px solid #202c33;cursor:pointer}
+.search-item:hover{background:#202c33}
+.highlight{outline:2px solid var(--accent)}
 
 /* FULLSCREEN */
 .fullscreen{
@@ -120,51 +105,29 @@ position:fixed;inset:0;background:black;
 display:none;align-items:center;justify-content:center;z-index:9999
 }
 .fullscreen img,.fullscreen video{max-width:100%;max-height:100%}
-.exit{position:absolute;top:10px;right:10px;font-size:20px}
-
-/* SEARCH */
-.search-results{
-background:#111b21;max-height:200px;overflow-y:auto;
-border-radius:6px;margin-top:6px
-}
-.search-item{
-padding:6px;border-bottom:1px solid #202c33;
-cursor:pointer;font-size:13px
-}
-.search-item:hover{background:#202c33}
-.highlight{
-outline:2px solid var(--accent);
-animation:fade 2s forwards
-}
-@keyframes fade{to{outline-color:transparent}}
+.exit{position:absolute;top:10px;right:10px;font-size:20px;color:white}
 </style>
 </head>
 
 <body>
 <div class="app">
-
   <div class="header">
     <span>WhatsApp Chat Viewer</span>
     <div>
       <button onclick="toggleMode()">🌓</button>
-      <button class="menu-btn" onclick="toggleMenu()">☰</button>
+      <button onclick="toggleMenu()">☰</button>
     </div>
   </div>
 
-  <!-- DROPDOWN -->
   <div id="menu" class="dropdown">
-    <input type="file" id="zip" accept=".zip">
-
+    <input type="file" id="file" accept=".zip,.txt">
     <div class="controls-row">
-      <input id="q" class="search-box" placeholder="Search messages">
-      <button onclick="search()">🔍</button>
+      <input id="q" class="search-box" placeholder="Search">
+      <button class="action" onclick="search()">🔍</button>
     </div>
-
     <div class="controls-row">
-      <button onclick="pickWallpaper()">🖼 Wallpaper</button>
-      <button onclick="exportPDF()">PDF</button>
+      <button class="action" onclick="pickWallpaper()">🖼 Choose Background</button>
     </div>
-
     <div id="searchResults" class="search-results"></div>
   </div>
 
@@ -178,10 +141,7 @@ animation:fade 2s forwards
 </div>
 
 <script>
-let bubbles=[];
-let currentAudio=null;
-let currentBtn=null;
-
+let bubbles=[],currentAudio=null,currentBtn=null;
 const chat=document.getElementById("chat");
 const fs=document.getElementById("fs");
 const resultsDiv=document.getElementById("searchResults");
@@ -190,179 +150,124 @@ const menu=document.getElementById("menu");
 /* MENU */
 function toggleMenu(){menu.classList.toggle("show")}
 document.addEventListener("click",e=>{
-if(!menu.contains(e.target) && !e.target.classList.contains("menu-btn")){
+if(!menu.contains(e.target)&&!e.target.textContent.includes("☰"))
 menu.classList.remove("show");
-}
 });
 
-/* LOAD ZIP */
-document.getElementById("zip").onchange=async e=>{
-const zip=await JSZip.loadAsync(e.target.files[0]);
-let txt=null,media={};
+/* FILE LOAD */
+document.getElementById("file").onchange=async e=>{
+const f=e.target.files[0];if(!f)return;
 
+if(f.name.endsWith(".txt")){
+render(await f.text(),{});return;
+}
+
+const zip=await JSZip.loadAsync(f);let txt=null,media={};
 for(const p in zip.files){
 const n=p.split("/").pop();
-if(n.endsWith(".txt")) txt=await zip.files[p].async("string");
+if(n.endsWith(".txt"))txt=await zip.files[p].async("string");
 else if(/\.(jpg|png|jpeg|webp|mp4|mp3|opus|ogg)$/i.test(n))
 media[n]=URL.createObjectURL(await zip.files[p].async("blob"));
 }
-render(txt,media);
-menu.classList.remove("show");
+if(txt)render(txt,media);
 };
 
 /* RENDER */
 function render(text,media){
-chat.innerHTML="";bubbles=[];resultsDiv.innerHTML="";
+chat.innerHTML="";bubbles=[];
 const lines=text.split(/\r?\n/);
 let cur=null,msgs=[];
 const r=/^(\d+\/\d+\/\d+),\s(\d+:\d+).*?- ([^:]+): (.*)$/;
-
 for(const l of lines){
 const m=l.match(r);
 if(m){if(cur)msgs.push(cur);cur={d:m[1],t:m[2],s:m[3],x:m[4]};}
 else if(cur)cur.x+="\n"+l;
 }
 if(cur)msgs.push(cur);
-
-let last=null,me=msgs[0]?.s;
+const me=msgs[0]?.s;let last=null;
 
 msgs.forEach(m=>{
-if(m.d!==last){
-const d=document.createElement("div");
-d.className="date";d.textContent=m.d;
-chat.appendChild(d);last=m.d;
-}
-
+if(m.d!==last){const d=document.createElement("div");
+d.className="date";d.textContent=m.d;chat.appendChild(d);last=m.d;}
 const b=document.createElement("div");
 b.className="bubble "+(m.s===me?"sent":"received");
-b.innerHTML=`
-<div class="sender">${m.s}</div>
+b.innerHTML=`<div class="sender">${m.s}</div>
 <div class="text">${m.x}</div>
-<div class="time-wrap">
-  <span class="time">${m.t}</span>
-  ${m.s===me ? `<span class="ticks">✔✔</span>` : ``}
-</div>
-`;
-
+${m.s===me?'<div class="ticks">✓✓</div>':""}
+<div class="time">${m.t}</div>`;
 const f=m.x.match(/((IMG|VID|PTT|STK)-\d+-WA\d+\.\w+|\S+\.webp)/i)?.[0];
-
-if(f && media[f]){
+if(f&&media[f]){
 const w=document.createElement("div");w.className="media-wrap";
-
-if(/\.(jpg|png|jpeg)$/i.test(f) || f.startsWith("IMG")){
+if(/\.(jpg|png|jpeg|webp)$/i.test(f))
 w.innerHTML=`<img class="media" src="${media[f]}" onclick="openFS(this)">
 <button class="fs-btn" onclick="openFS(this.previousElementSibling)">⛶</button>`;
+else if(/\.(mp4|ogg|webm)$/i.test(f)){
+const id="v"+Math.random();
+w.innerHTML=`<video id="${id}" class="media" src="${media[f]}" controls loop></video>
+<button class="fs-btn" onclick="openFS(this.previousElementSibling,true)">⛶</button>
+<button class="fs-btn" style="top:40px" onclick="videoSpeed('${id}',this)">1×</button>`;
 }
-else if(/\.(mp4|webm|ogg)$/i.test(f)){
-w.innerHTML=`<video class="media" src="${media[f]}" controls loop playsinline onclick="openFS(this,true)"></video>
-<button class="fs-btn" onclick="openFS(this.previousElementSibling,true)">⛶</button>`;
-}
-else if(/\.(opus|mp3)$/i.test(f)){
+else if(/\.(mp3|opus)$/i.test(f)){
 const id="a"+Math.random();
-w.innerHTML=`
-<div class="voice">
+w.innerHTML=`<div class="voice">
 <button onclick="togglePlay('${id}',this)">▶</button>
-<input type="range" min="0" value="0" step="0.1" oninput="seek('${id}',this)">
-<span class="voice-time" id="${id}-t">0:00</span>
+<input type="range" min="0" step="0.1" oninput="seek('${id}',this)">
 <button onclick="speed('${id}',this)">1×</button>
-<audio id="${id}" src="${media[f]}" ontimeupdate="updateBar('${id}')" onended="resetAudio(this)"></audio>
+<audio id="${id}" src="${media[f]}" ontimeupdate="updateBar('${id}')"></audio>
 </div>`;
-}
-else if(f.endsWith(".webp")){
-w.innerHTML=`<img class="sticker" src="${media[f]}">`;
 }
 b.appendChild(w);
 }
-
-chat.appendChild(b);
-bubbles.push(b);
+chat.appendChild(b);bubbles.push(b);
 });
 }
 
 /* VOICE */
 function togglePlay(id,btn){
 const a=document.getElementById(id);
-if(currentAudio && currentAudio!==a){
-currentAudio.pause();currentAudio.currentTime=0;
-if(currentBtn)currentBtn.textContent="▶";
-}
-if(a.paused){
-a.play();btn.textContent="⏸";
-currentAudio=a;currentBtn=btn;
-}else{
-a.pause();btn.textContent="▶";
-currentAudio=null;currentBtn=null;
-}
-}
-function resetAudio(a){
-if(a===currentAudio){currentBtn.textContent="▶";currentAudio=null;currentBtn=null;}
+if(currentAudio&&currentAudio!==a){currentAudio.pause();currentBtn.textContent="▶";}
+if(a.paused){a.play();btn.textContent="⏸";currentAudio=a;currentBtn=btn;}
+else{a.pause();btn.textContent="▶";currentAudio=null;}
 }
 function seek(id,s){document.getElementById(id).currentTime=s.value}
 function updateBar(id){
 const a=document.getElementById(id);
 const s=a.parentElement.querySelector("input");
-if(!s.max)s.max=a.duration;
-s.value=a.currentTime;
-document.getElementById(id+"-t").textContent=format(a.currentTime);
+s.max=a.duration;s.value=a.currentTime;
 }
 function speed(id,b){
 const a=document.getElementById(id);
 a.playbackRate=a.playbackRate===1?1.5:a.playbackRate===1.5?2:1;
 b.textContent=a.playbackRate+"×";
 }
-function format(t){
-return Math.floor(t/60)+":"+(Math.floor(t%60)).toString().padStart(2,"0");
+function videoSpeed(id,b){
+const v=document.getElementById(id);
+v.playbackRate=v.playbackRate===1?1.5:v.playbackRate===1.5?2:1;
+b.textContent=v.playbackRate+"×";
 }
 
 /* SEARCH */
 function search(){
 resultsDiv.innerHTML="";
-const q=document.getElementById("q").value.toLowerCase().trim();
-if(!q)return;
+const q=document.getElementById("q").value.toLowerCase();
 bubbles.forEach(b=>{
 if(b.textContent.toLowerCase().includes(q)){
 const i=document.createElement("div");
 i.className="search-item";
-i.textContent=b.querySelector(".text")?.textContent.slice(0,60)+"…";
-i.onclick=()=>{
-b.scrollIntoView({behavior:"smooth",block:"center"});
-b.classList.add("highlight");
-setTimeout(()=>b.classList.remove("highlight"),2000);
-menu.classList.remove("show");
-};
+i.textContent=b.querySelector(".text")?.textContent.slice(0,50);
+i.onclick=()=>{b.scrollIntoView({behavior:"smooth"});b.classList.add("highlight");};
 resultsDiv.appendChild(i);
 }
 });
 }
 
 /* FULLSCREEN */
-function openFS(el,isVid){
-fs.innerHTML=`<button class="exit" onclick="closeFS()">✕</button>`;
-const c=el.cloneNode(true);
-if(isVid){c.controls=true;c.loop=true;c.playsInline=true;}
+function openFS(el,vid){
+fs.innerHTML='<button class="exit" onclick="closeFS()">✕</button>';
+const c=el.cloneNode(true);if(vid){c.controls=true;}
 fs.appendChild(c);fs.style.display="flex";
 }
 function closeFS(){fs.style.display="none"}
-
-/* PDF — FIXED */
-function exportPDF(){
-if(!chat.children.length){alert("No chat loaded");return;}
-const clone=chat.cloneNode(true);
-clone.querySelectorAll("video,audio,button,input,.fs-btn,.voice").forEach(e=>e.remove());
-clone.style.background="#efeae2";
-clone.style.color="#111b21";
-clone.style.padding="10px";
-
-html2pdf().set({
-margin:8,
-filename:"WhatsApp-Chat.pdf",
-image:{type:"jpeg",quality:0.98},
-html2canvas:{scale:2,backgroundColor:"#efeae2"},
-jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}
-}).from(clone).save();
-
-menu.classList.remove("show");
-}
 
 /* MODE */
 function toggleMode(){document.body.classList.toggle("light")}
@@ -371,20 +276,7 @@ function toggleMode(){document.body.classList.toggle("light")}
 function pickWallpaper(){document.getElementById("wallpaperPicker").click()}
 document.getElementById("wallpaperPicker").onchange=e=>{
 chat.style.backgroundImage=`url(${URL.createObjectURL(e.target.files[0])})`;
-menu.classList.remove("show");
 };
-/* BLUE TICKS WHEN CHAT IS VIEWED */
-function markRead(){
-document.querySelectorAll(".sent .ticks").forEach(t=>{
-t.classList.add("read");
-});
-}
-
-// Mark as read shortly after load
-setTimeout(markRead, 800);
-
-// Also mark when user scrolls
-chat.addEventListener("scroll", markRead);
 </script>
 </body>
 </html>
