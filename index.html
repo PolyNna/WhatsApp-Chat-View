@@ -16,99 +16,109 @@
 --bg:#efeae2;--panel:#ffffff;--sent:#dcf8c6;--recv:#ffffff;
 --text:#111b21;--sub:#667781;--btn:#111b21;
 }
-
 body{
 margin:0;display:flex;justify-content:center;
-font-family:Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)
+font-family:Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);
 }
-.app{max-width:420px;width:100%;height:100vh;display:flex;flex-direction:column}
+.app{max-width:420px;width:100%;height:100vh;display:flex;flex-direction:column;position:relative;}
 
 /* HEADER */
 .header{
-background:var(--panel);
-padding:10px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+background:var(--panel);padding:10px;
+display:flex;justify-content:space-between;align-items:center;
+position:relative;
 }
 .header button{
-background:none;border:none;font-size:20px;cursor:pointer;
-color:var(--btn)
+background:none;border:none;font-size:20px;cursor:pointer;color:var(--btn);
 }
 
 /* MENU */
 .dropdown{
 position:absolute;top:56px;right:10px;width:320px;
-background:var(--panel);border-radius:10px;
-padding:10px;display:none;z-index:1000
+background:var(--panel);border-radius:10px;padding:10px;display:none;z-index:1000;
 }
-.dropdown.show{display:block}
+.dropdown.show{display:block;}
 
-.controls-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.controls-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
 button.action{
-background:var(--accent);border:none;border-radius:6px;
-padding:6px 10px;cursor:pointer;color:white
+background:var(--accent);border:none;border-radius:6px;padding:6px 10px;cursor:pointer;color:white;
 }
-.search-box{flex:1;padding:6px;border-radius:6px;border:none}
+.search-box{flex:1;padding:6px;border-radius:6px;border:none;}
 
 /* CHAT */
 .chat{
 flex:1;overflow-y:auto;padding:10px;
-background:var(--bg);background-size:cover;background-position:center
+background:var(--bg);background-size:cover;background-position:center;
+position:relative;
 }
-.bubble{max-width:75%;margin:6px 0;padding:8px;border-radius:8px}
-.sent{margin-left:auto;background:var(--sent)}
-.received{background:var(--recv)}
-.sender{font-size:12px;font-weight:bold;color:#53bdeb}
-.text{white-space:pre-wrap}
-.time{font-size:11px;color:var(--sub);text-align:right}
-.ticks{font-size:12px;color:#53bdeb;text-align:right}
+.bubble{
+max-width:75%;margin:6px 0;padding:8px;border-radius:8px;
+display:flex;flex-direction:column;
+box-shadow:0 1px 2px rgba(0,0,0,0.2);
+background:linear-gradient(to bottom, rgba(0,0,0,0.05), transparent);
+position:relative;
+}
+.sent{margin-left:auto;background:var(--sent);}
+.received{margin-right:auto;background:var(--recv);}
+.sender{font-size:12px;font-weight:bold;color:#53bdeb;}
+.text{white-space:pre-wrap;}
+.time{font-size:11px;color:var(--sub);text-align:right;}
+.ticks{font-size:14px;color:#53bdeb;text-align:right;margin-top:2px;}
+
+/* DATE - WhatsApp style, invert colors with mode */
+.date{
+margin:10px auto;
+font-size:12px;padding:4px 10px;border-radius:10px;text-align:center;max-width:140px;box-shadow:0 1px 3px rgba(0,0,0,0.3);
+background: #111b21; color: #e9edef; /* dark mode default */
+}
+body.light .date{
+background: #ffffff; color: #111b21; /* light mode */
+}
+
+/* TOTAL MESSAGES */
+.total-messages{
+position:absolute;bottom:10px;left:10px;
+background:rgba(0,0,0,0.4);padding:4px 8px;border-radius:6px;
+font-size:12px;color:white;
+}
 
 /* MEDIA */
-.media{max-width:100%;border-radius:6px;margin-top:6px}
-.media-wrap{position:relative}
+.media{max-width:100%;border-radius:6px;margin-top:6px;}
+.media-wrap{position:relative;}
 .fs-btn{
 position:absolute;top:6px;right:6px;
-background:rgba(0,0,0,.6);color:white;border:none;border-radius:4px
+background:rgba(0,0,0,.6);color:white;border:none;border-radius:4px;
 }
-.sticker{max-width:160px;margin-top:6px}
+.sticker{max-width:160px;margin-top:6px;}
 
 /* VOICE */
 .voice{
-display:flex;align-items:center;gap:6px;
-background:#1f2c33;border-radius:20px;padding:6px;margin-top:6px
+display:flex;align-items:center;gap:6px;background:#1f2c33;border-radius:20px;padding:6px;margin-top:6px;
 }
 .voice button{
-background:none;border:none;color:#00a884;
-font-weight:bold;cursor:pointer
+background:none;border:none;color:#00a884;font-weight:bold;cursor:pointer;
 }
-.voice input[type=range]{flex:1}
+.voice input[type=range]{flex:1;}
 
-/* DATE */
-.date{
-margin:10px auto;background:#111b21;color:white;
-font-size:12px;padding:4px 10px;border-radius:8px
-}
-
-/* SEARCH */
+/* SEARCH RESULTS, invert colors with mode */
 .search-results{
-background:#111b21;max-height:200px;overflow-y:auto;
-border-radius:6px;margin-top:6px
+background:#111b21;max-height:200px;overflow-y:auto;border-radius:6px;margin-top:6px;color:#e9edef; /* dark mode */
 }
-.search-item{padding:6px;border-bottom:1px solid #202c33;cursor:pointer}
-.search-item:hover{background:#202c33}
-.highlight{outline:2px solid var(--accent)}
+body.light .search-results{
+background:#ffffff; color:#111b21; /* light mode */
+}
+.search-item{padding:6px;border-bottom:1px solid #202c33;cursor:pointer;}
+.search-item:hover{background:#202c33;}
+.highlight{outline:2px solid var(--accent);}
 
 /* FULLSCREEN */
 .fullscreen{
-position:fixed;inset:0;background:black;
-display:none;align-items:center;justify-content:center;z-index:9999
+position:fixed;inset:0;background:black;display:none;align-items:center;justify-content:center;z-index:9999;
 }
-.fullscreen img,.fullscreen video{max-width:100%;max-height:100%}
-.exit{position:absolute;top:10px;right:10px;font-size:20px;color:white}
+.fullscreen img,.fullscreen video{max-width:100%;max-height:100%;}
+.exit{position:absolute;top:10px;right:10px;font-size:20px;color:white;}
 </style>
 </head>
-
 <body>
 <div class="app">
   <div class="header">
@@ -122,20 +132,20 @@ display:none;align-items:center;justify-content:center;z-index:9999
   <div id="menu" class="dropdown">
     <input type="file" id="file" accept=".zip,.txt">
     <div class="controls-row">
-      <input id="q" class="search-box" placeholder="Search">
+      <input id="q" class="search-box" placeholder="Search messages">
       <button class="action" onclick="search()">🔍</button>
     </div>
     <div class="controls-row">
-      <button class="action" onclick="pickWallpaper()">🖼 Choose Background</button>
+      <button class="action" onclick="pickWallpaper()">🖼 Select Background</button>
     </div>
     <div id="searchResults" class="search-results"></div>
   </div>
 
   <div id="chat" class="chat"></div>
+  <div id="totalMsg" class="total-messages"></div>
 </div>
 
 <input type="file" id="wallpaperPicker" accept="image/*" hidden>
-
 <div id="fs" class="fullscreen">
   <button class="exit" onclick="closeFS()">✕</button>
 </div>
@@ -146,6 +156,7 @@ const chat=document.getElementById("chat");
 const fs=document.getElementById("fs");
 const resultsDiv=document.getElementById("searchResults");
 const menu=document.getElementById("menu");
+const totalMsgDiv=document.getElementById("totalMsg");
 
 /* MENU */
 function toggleMenu(){menu.classList.toggle("show")}
@@ -157,11 +168,7 @@ menu.classList.remove("show");
 /* FILE LOAD */
 document.getElementById("file").onchange=async e=>{
 const f=e.target.files[0];if(!f)return;
-
-if(f.name.endsWith(".txt")){
-render(await f.text(),{});return;
-}
-
+if(f.name.endsWith(".txt")){render(await f.text(),{});return;}
 const zip=await JSZip.loadAsync(f);let txt=null,media={};
 for(const p in zip.files){
 const n=p.split("/").pop();
@@ -171,6 +178,14 @@ media[n]=URL.createObjectURL(await zip.files[p].async("blob"));
 }
 if(txt)render(txt,media);
 };
+
+/* FORMAT DATE */
+function formatDate(str){
+  const [m,d,y]=str.split("/").map(Number);
+  const fullYear = y < 100 ? 2000 + y : y;
+  const months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  return `${months[m-1]} ${d}, ${fullYear}`;
+}
 
 /* RENDER */
 function render(text,media){
@@ -187,8 +202,7 @@ if(cur)msgs.push(cur);
 const me=msgs[0]?.s;let last=null;
 
 msgs.forEach(m=>{
-if(m.d!==last){const d=document.createElement("div");
-d.className="date";d.textContent=m.d;chat.appendChild(d);last=m.d;}
+if(m.d!==last){const d=document.createElement("div");d.className="date";d.textContent=formatDate(m.d);chat.appendChild(d);last=m.d;}
 const b=document.createElement("div");
 b.className="bubble "+(m.s===me?"sent":"received");
 b.innerHTML=`<div class="sender">${m.s}</div>
@@ -220,6 +234,9 @@ b.appendChild(w);
 }
 chat.appendChild(b);bubbles.push(b);
 });
+
+/* TOTAL MESSAGES */
+totalMsgDiv.textContent = `Total Messages: ${msgs.length}`;
 }
 
 /* VOICE */
@@ -227,13 +244,14 @@ function togglePlay(id,btn){
 const a=document.getElementById(id);
 if(currentAudio&&currentAudio!==a){currentAudio.pause();currentBtn.textContent="▶";}
 if(a.paused){a.play();btn.textContent="⏸";currentAudio=a;currentBtn=btn;}
-else{a.pause();btn.textContent="▶";currentAudio=null;}
+else{a.pause();btn.textContent="▶";currentAudio=null;currentBtn=null;}
 }
-function seek(id,s){document.getElementById(id).currentTime=s.value}
+function seek(id,s){document.getElementById(id).currentTime=s.value;}
 function updateBar(id){
 const a=document.getElementById(id);
 const s=a.parentElement.querySelector("input");
-s.max=a.duration;s.value=a.currentTime;
+if(!s.max)s.max=a.duration;
+s.value=a.currentTime;
 }
 function speed(id,b){
 const a=document.getElementById(id);
@@ -255,7 +273,7 @@ if(b.textContent.toLowerCase().includes(q)){
 const i=document.createElement("div");
 i.className="search-item";
 i.textContent=b.querySelector(".text")?.textContent.slice(0,50);
-i.onclick=()=>{b.scrollIntoView({behavior:"smooth"});b.classList.add("highlight");};
+i.onclick=()=>{b.scrollIntoView({behavior:"smooth"});b.classList.add("highlight");setTimeout(()=>b.classList.remove("highlight"),2000);};
 resultsDiv.appendChild(i);
 }
 });
@@ -267,13 +285,13 @@ fs.innerHTML='<button class="exit" onclick="closeFS()">✕</button>';
 const c=el.cloneNode(true);if(vid){c.controls=true;}
 fs.appendChild(c);fs.style.display="flex";
 }
-function closeFS(){fs.style.display="none"}
+function closeFS(){fs.style.display="none";}
 
 /* MODE */
-function toggleMode(){document.body.classList.toggle("light")}
+function toggleMode(){document.body.classList.toggle("light");}
 
 /* WALLPAPER */
-function pickWallpaper(){document.getElementById("wallpaperPicker").click()}
+function pickWallpaper(){document.getElementById("wallpaperPicker").click();}
 document.getElementById("wallpaperPicker").onchange=e=>{
 chat.style.backgroundImage=`url(${URL.createObjectURL(e.target.files[0])})`;
 };
