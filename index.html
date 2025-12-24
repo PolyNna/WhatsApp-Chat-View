@@ -32,6 +32,13 @@ font-family:Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);
   position: relative;
   box-sizing: border-box;
   padding: 0 10px;
+  transition: max-width 0.3s;
+}
+
+/* DESKTOP MODE */
+body.desktop .app {
+  max-width: 1024px;
+  margin: 0 auto;
 }
 
 /* HEADER */
@@ -62,6 +69,8 @@ background:var(--accent);border:none;border-radius:6px;padding:6px 10px;cursor:p
 flex:1;overflow-y:auto;padding:10px;
 background:var(--bg);background-size:cover;background-position:center;
 position:relative;
+max-width: 600px; /* max bubble container width */
+margin: 0 auto; /* center chat on large screens */
 }
 .bubble{
 max-width:75%;margin:6px 0;padding:8px;border-radius:8px;
@@ -137,6 +146,7 @@ position:fixed;inset:0;background:black;display:none;align-items:center;justify-
     <span>WhatsApp Chat Viewer</span>
     <div>
       <button onclick="toggleMode()">🌓</button>
+      <button onclick="toggleDesktop()">🖥️</button>
       <button onclick="toggleMenu()">☰</button>
     </div>
   </div>
@@ -169,6 +179,19 @@ const fs=document.getElementById("fs");
 const resultsDiv=document.getElementById("searchResults");
 const menu=document.getElementById("menu");
 const totalMsgDiv=document.getElementById("totalMsg");
+
+/* DESKTOP MODE TOGGLE */
+let isDesktop = false;
+function toggleDesktop() {
+    isDesktop = !isDesktop;
+    if(isDesktop){
+        document.body.classList.add("desktop");
+        document.querySelector('meta[name="viewport"]').setAttribute("content","width=1024");
+    } else {
+        document.body.classList.remove("desktop");
+        document.querySelector('meta[name="viewport"]').setAttribute("content","width=device-width, initial-scale=1.0");
+    }
+}
 
 /* MENU */
 function toggleMenu(){menu.classList.toggle("show")}
