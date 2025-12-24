@@ -1,6 +1,6 @@
 {
-  "name": "WhatsApp Chat Viewer",
-  "short_name": "Chat Viewer",
+  "name": "WhatsApp Chat Viewer by Polycarp",
+  "short_name": "Poly WhatsChat Viewer",
   "start_url": "./?v=2",
   "display": "standalone",
   "background_color": "#0b141a",
