@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b141a">
-<link rel="icon" href="icon-192.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<meta name="theme-color" content="#0b141a">
 <title>WhatsApp Chat Viewer</title>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <style>
@@ -20,74 +19,66 @@
 --text:#111b21;--sub:#667781;--btn:#111b21;
 }
 body{
-margin:0;display:flex;justify-content:center;
-font-family:Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);
+margin:0;display:flex;justify-content:center;font-family:Segoe UI,Roboto,Arial;
+background:var(--bg);color:var(--text);
 }
 .app{
-  width: 100%;
-  max-width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  box-sizing: border-box;
-  padding: 0 10px;
-  transition: max-width 0.3s;
+width:100%;max-width:100%;height:100vh;display:flex;flex-direction:column;position:relative;
+box-sizing:border-box;padding:0 10px;transition:max-width 0.3s;
 }
-
-/* DESKTOP MODE */
-body.desktop .app {
-  max-width: 1024px;
-  margin: 0 auto;
-}
+body.desktop .app {max-width:1024px;margin:0 auto;}
 
 /* HEADER */
 .header{
-  background:var(--panel);
-  padding:10px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:relative;
-  border-radius:10px;
-  transition: background 0.3s;
+background: rgba(32,44,51,0.85);
+backdrop-filter: blur(8px);
+padding:10px;display:flex;justify-content:space-between;align-items:center;position:relative;border-radius:10px;
 }
 .header button{
-  background:none;border:none;font-size:20px;cursor:pointer;color:var(--btn);
+background:none;border:none;font-size:20px;cursor:pointer;color:var(--btn);
 }
 
 /* MENU */
 .dropdown{
-  position:absolute;top:56px;right:10px;width:320px;
-  background:var(--panel);border-radius:10px;padding:10px;
-  display:none;z-index:1000;transition: background 0.3s;
+position:absolute;top:56px;right:10px;width:320px;
+background: rgba(32,44,51,0.85);
+backdrop-filter: blur(8px);
+border-radius:10px;padding:10px;display:none;z-index:1000;
 }
 .dropdown.show{display:block;}
-
-/* CONTROLS */
 .controls-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
 button.action{
-  background:var(--accent);border:none;border-radius:6px;padding:6px 10px;cursor:pointer;color:white;
+background:var(--accent);border:none;border-radius:6px;padding:6px 10px;cursor:pointer;color:white;
 }
 .search-box{flex:1;padding:6px;border-radius:6px;border:none;}
 
 /* CHAT */
 .chat{
-flex:1;overflow-y:auto;padding:10px;
-background:var(--bg);background-size:cover;background-position:center;
-position:relative;
-max-width: 600px; /* max bubble container width */
-margin: 0 auto; /* center chat on large screens */
+flex:1;overflow-y:auto;padding:10px;background:var(--bg);
+background-size:cover;background-position:center;position:relative;
+max-width:600px;margin:0 auto;
 }
+.chat::-webkit-scrollbar {width:8px;}
+.chat::-webkit-scrollbar-track {background: rgba(255,255,255,0.05); border-radius:4px;}
+.chat::-webkit-scrollbar-thumb {background: rgba(0,168,132,0.7); border-radius:4px;}
+
 .bubble{
-max-width:75%;margin:6px 0;padding:8px;border-radius:8px;
-display:flex;flex-direction:column;
-box-shadow:0 1px 2px rgba(0,0,0,0.2);
-background:linear-gradient(to bottom, rgba(0,0,0,0.05), transparent);
-position:relative;
+max-width:75%;margin:6px 0;padding:8px;border-radius:12px;display:flex;flex-direction:column;
+box-shadow:0 4px 8px rgba(0,0,0,0.2);opacity:0;transform:translateY(10px);
+animation: fadeIn 0.3s forwards;
 }
-.sent{margin-left:auto;background:var(--sent);}
-.received{margin-right:auto;background:var(--recv);}
+@keyframes fadeIn{to{opacity:1;transform:translateY(0);}}
+
+.bubble.sent{
+margin-left:auto;
+background: linear-gradient(145deg, #00a884, #00775b);
+color:#fff;
+}
+.bubble.received{
+margin-right:auto;
+background: linear-gradient(145deg, #202c33, #2a3b44);
+color:#e9edef;
+}
 .sender{font-size:12px;font-weight:bold;color:#53bdeb;}
 .text{white-space:pre-wrap;}
 .time{font-size:11px;color:var(--sub);text-align:right;}
@@ -95,34 +86,25 @@ position:relative;
 
 /* DATE */
 .date{
-margin:10px auto;
-font-size:12px;padding:4px 10px;border-radius:10px;text-align:center;max-width:140px;box-shadow:0 1px 3px rgba(0,0,0,0.3);
-background: #111b21; color: #e9edef; 
+margin:10px auto;font-size:12px;padding:4px 10px;border-radius:10px;text-align:center;max-width:140px;
+box-shadow:0 1px 3px rgba(0,0,0,0.3);background:#111b21;color:#e9edef;
 }
-body.light .date{
-background: #ffffff; color: #111b21; 
-}
+body.light .date{background:#ffffff;color:#111b21;}
 
 /* TOTAL MESSAGES */
 .total-messages{
-position:absolute;bottom:10px;left:10px;
-background:rgba(0,0,0,0.4);padding:4px 8px;border-radius:6px;
-font-size:12px;color:white;
+position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,0.4);padding:4px 8px;
+border-radius:6px;font-size:12px;color:white;
 }
 
 /* MEDIA */
 .media{max-width:100%;border-radius:6px;margin-top:6px;}
 .media-wrap{position:relative;}
-.fs-btn{
-position:absolute;top:6px;right:6px;
-background:rgba(0,0,0,.6);color:white;border:none;border-radius:4px;
-}
+.fs-btn{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.6);color:white;border:none;border-radius:4px;}
 .sticker{max-width:160px;margin-top:6px;}
 
 /* VOICE */
-.voice{
-display:flex;align-items:center;gap:6px;background:#1f2c33;border-radius:20px;padding:6px;margin-top:6px;
-}
+.voice{display:flex;align-items:center;gap:6px;background:#1f2c33;border-radius:20px;padding:6px;margin-top:6px;}
 .voice button{background:none;border:none;color:#00a884;font-weight:bold;cursor:pointer;}
 .voice input[type=range]{flex:1;}
 
@@ -130,7 +112,7 @@ display:flex;align-items:center;gap:6px;background:#1f2c33;border-radius:20px;pa
 .search-results{
 background:#111b21;max-height:200px;overflow-y:auto;border-radius:6px;margin-top:6px;color:#e9edef;
 }
-body.light .search-results{background:#ffffff;color:#111b21;}
+body.light .search-results{background:#fff;color:#111b21;}
 .search-item{padding:6px;border-bottom:1px solid #202c33;cursor:pointer;}
 .search-item:hover{background:#202c33;}
 .highlight{outline:2px solid var(--accent);}
@@ -142,11 +124,15 @@ position:fixed;inset:0;background:black;display:none;align-items:center;justify-
 .fullscreen img,.fullscreen video{max-width:100%;max-height:100%;}
 .exit{position:absolute;top:10px;right:10px;font-size:20px;color:white;}
 
-/* SCROLL BUTTONS */
+/* FLOATING SCROLL BUTTONS */
 .scroll-btn{
-position:fixed;bottom:20px;right:20px;z-index:1001;
-background:var(--accent);color:white;border:none;padding:8px 12px;border-radius:6px;margin-left:6px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.3);
+position:fixed;right:20px;background:var(--accent);color:#fff;border:none;border-radius:50%;
+padding:10px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.3);
+font-size:18px;z-index:1001;transition:transform 0.2s;
 }
+.scroll-btn:hover{transform:scale(1.1);}
+.scroll-btn.first{bottom:70px;}
+.scroll-btn.last{bottom:20px;}
 </style>
 </head>
 <body>
@@ -162,11 +148,7 @@ background:var(--accent);color:white;border:none;padding:8px 12px;border-radius:
 
   <div id="menu" class="dropdown">
     <input type="file" id="file" accept=".zip,.txt">
-    <div class="controls-row">
-      <button class="action" onclick="scrollToFirst()">⬆ First</button>
-      <button class="action" onclick="scrollToLast()">⬇ Last</button>
-      <button class="action" onclick="clearChat()">🗑 Clear Chat</button>
-    </div>
+    <button class="action" onclick="clearChat()">🗑 Clear Chat</button>
     <div class="controls-row">
       <input id="q" class="search-box" placeholder="Search messages">
       <button class="action" onclick="search()">🔍</button>
@@ -180,6 +162,10 @@ background:var(--accent);color:white;border:none;padding:8px 12px;border-radius:
   <div id="chat" class="chat"></div>
   <div id="totalMsg" class="total-messages"></div>
 </div>
+
+<!-- Floating Scroll Buttons -->
+<button class="scroll-btn first" onclick="scrollFirst()">⏮️</button>
+<button class="scroll-btn last" onclick="scrollLast()">⏭️</button>
 
 <input type="file" id="wallpaperPicker" accept="image/*" hidden>
 <div id="fs" class="fullscreen">
@@ -214,10 +200,6 @@ if(!menu.contains(e.target)&&!e.target.textContent.includes("☰"))
 menu.classList.remove("show");
 });
 
-/* SCROLL */
-function scrollToFirst(){bubbles[0]?.scrollIntoView({behavior:"smooth"});}
-function scrollToLast(){bubbles[bubbles.length-1]?.scrollIntoView({behavior:"smooth"});}
-
 /* CLEAR CHAT */
 function clearChat(){
   if(!confirm("Clear all chats and media?")) return;
@@ -229,7 +211,7 @@ function clearChat(){
   menu.classList.remove("show");
 }
 
-/* SAVE/LOAD CHAT */
+/* SAVE/LOAD CHAT WITH MEDIA */
 function saveChat(text, media){
   const mediaObj = {};
   const keys = Object.keys(media);
@@ -387,6 +369,10 @@ function pickWallpaper(){document.getElementById("wallpaperPicker").click();}
 document.getElementById("wallpaperPicker").onchange=e=>{
 chat.style.backgroundImage=`url(${URL.createObjectURL(e.target.files[0])})`;
 };
+
+/* SCROLL TO FIRST / LAST */
+function scrollFirst(){if(bubbles.length) bubbles[0].scrollIntoView({behavior:"smooth"});}
+function scrollLast(){if(bubbles.length) bubbles[bubbles.length-1].scrollIntoView({behavior:"smooth"});}
 
 /* LOAD CHAT ON START */
 loadChat();
