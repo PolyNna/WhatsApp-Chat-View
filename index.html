@@ -168,6 +168,43 @@ if(!menu.contains(e.target)&&!e.target.textContent.includes("☰"))
 menu.classList.remove("show");
 });
 
+/* FILE LOAD */
+document.getElementById("file").onchange=async e=>{
+const f=e.target.files[0];if(!f)return;
+if(f.name.endsWith(".txt")){render(await f.text(),{});return;}
+const zip=await JSZip.loadAsync(f);let txt=null,media={};
+for(const p in zip.files){
+const n=p.split("/").pop();
+if(n.endsWith(".txt"))txt=await zip.files[p].async("string");
+else if(/\.(jpg|png|jpeg|webp|mp4|mp3|opus|ogg)$/i.test(n))
+media[n]=URL.createObjectURL(await zip.files[p].async("blob"));
+else if(n.endsWith(".vcf")){ // CONTACT FILE
+    const contactBlob = await zip.files[p].async("blob");
+    const url = URL.createObjectURL(contactBlob);
+    const contactText = await zip.files[p].async("string");
+    const contactDiv = document.createElement("div");
+    contactDiv.className = "bubble received";
+    contactDiv.innerHTML = `<div class="sender">Contact File</div>
+                            <div class="text">
+                              <a href="${url}" download="${n}">Download ${n}</a>
+                            </div>`;
+    chat.appendChild(contactDiv);
+}
+else if(n.endsWith(".pdf")||n.endsWith(".doc")||n.endsWith(".docx")){ // DOCUMENT FILE
+    const docBlob = await zip.files[p].async("blob");
+    const url = URL.createObjectURL(docBlob);
+    const docDiv = document.createElement("div");
+    docDiv.className = "bubble received";
+    docDiv.innerHTML = `<div class="sender">Document File</div>
+                        <div class="text">
+                          <a href="${url}" download="${n}">Download ${n}</a>
+                        </div>`;
+    chat.appendChild(docDiv);
+}
+}
+if(txt)render(txt,media);
+};
+
 /* FORMAT DATE */
 function formatDate(str){
   const [m,d,y]=str.split("/").map(Number);
@@ -176,66 +213,7 @@ function formatDate(str){
   return `${months[m-1]} ${d}, ${fullYear}`;
 }
 
-/* FILE LOAD WITH CONTACTS AND PDF SUPPORT */
-document.getElementById("file").onchange = async e => {
-  const f = e.target.files[0]; if (!f) return;
-
-  if (f.name.endsWith(".txt")) { 
-    render(await f.text(), {}); 
-    return; 
-  }
-
-  const zip = await JSZip.loadAsync(f);
-  let txt = null, media = {};
-
-  for (const p in zip.files) {
-    const n = p.split("/").pop();
-
-    if (n.endsWith(".txt")) txt = await zip.files[p].async("string");
-    else if (/\.(jpg|png|jpeg|webp|mp4|mp3|opus|ogg)$/i.test(n))
-      media[n] = URL.createObjectURL(await zip.files[p].async("blob"));
-    else if (n.endsWith(".vcf")) { // CONTACT FILE
-      const contactText = await zip.files[p].async("string");
-      const contacts = parseVCF(contactText);
-      const contactDiv = document.createElement("div");
-      contactDiv.className = "bubble received";
-      contactDiv.innerHTML = `<div class="sender">Contact File</div>${contacts}`;
-      chat.appendChild(contactDiv);
-    }
-    else if (n.endsWith(".pdf")) { // PDF FILE
-      const pdfBlob = await zip.files[p].async("blob");
-      const url = URL.createObjectURL(pdfBlob);
-      const pdfDiv = document.createElement("div");
-      pdfDiv.className = "bubble received";
-      pdfDiv.innerHTML = `<div class="sender">PDF File</div>
-                          <div class="text"><a href="${url}" target="_blank">Open PDF: ${n}</a></div>`;
-      chat.appendChild(pdfDiv);
-    }
-  }
-
-  if (txt) render(txt, media);
-};
-
-/* PARSE VCF TO TABLE */
-function parseVCF(text){
-  const contacts = text.split(/END:VCARD/i);
-  let html = '<table style="border-collapse:collapse;width:100%;">';
-  contacts.forEach(c=>{
-    if(c.trim()==="") return;
-    const nameMatch = c.match(/FN:(.+)/i);
-    const telMatch = c.match(/TEL(?:;[^:]*)?:(.+)/i);
-    const emailMatch = c.match(/EMAIL(?:;[^:]*)?:(.+)/i);
-    html += '<tr>';
-    html += `<td style="padding:2px 4px;border-bottom:1px solid #ccc;">${nameMatch?nameMatch[1]:""}</td>`;
-    html += `<td style="padding:2px 4px;border-bottom:1px solid #ccc;">${telMatch?telMatch[1]:""}</td>`;
-    html += `<td style="padding:2px 4px;border-bottom:1px solid #ccc;">${emailMatch?emailMatch[1]:""}</td>`;
-    html += '</tr>';
-  });
-  html += '</table>';
-  return html;
-}
-
-/* RENDER CHAT */
+/* RENDER */
 function render(text,media){
 chat.innerHTML="";bubbles=[];
 const lines=text.split(/\r?\n/);
@@ -315,9 +293,10 @@ b.textContent=v.playbackRate+"×";
 /* SEARCH */
 function search(){
 resultsDiv.innerHTML="";
-const q=document.getElementById("q").value.toLowerCase();
+let q=document.getElementById("q").value.toLowerCase().trim().replace(/\s+/g,' ');
 bubbles.forEach(b=>{
-if(b.textContent.toLowerCase().includes(q)){
+let t=b.querySelector(".text")?.textContent.toLowerCase().trim().replace(/\s+/g,' ');
+if(t && t.includes(q)){
 const i=document.createElement("div");
 i.className="search-item";
 i.textContent=b.querySelector(".text")?.textContent.slice(0,50);
