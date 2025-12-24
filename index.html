@@ -43,24 +43,31 @@ body.desktop .app {
 
 /* HEADER */
 .header{
-background:var(--panel);padding:10px;
-display:flex;justify-content:space-between;align-items:center;
-position:relative;
+  background:var(--panel);
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:relative;
+  border-radius:10px;
+  transition: background 0.3s;
 }
 .header button{
-background:none;border:none;font-size:20px;cursor:pointer;color:var(--btn);
+  background:none;border:none;font-size:20px;cursor:pointer;color:var(--btn);
 }
 
 /* MENU */
 .dropdown{
-position:absolute;top:56px;right:10px;width:320px;
-background:var(--panel);border-radius:10px;padding:10px;display:none;z-index:1000;
+  position:absolute;top:56px;right:10px;width:320px;
+  background:var(--panel);border-radius:10px;padding:10px;
+  display:none;z-index:1000;transition: background 0.3s;
 }
 .dropdown.show{display:block;}
 
+/* CONTROLS */
 .controls-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
 button.action{
-background:var(--accent);border:none;border-radius:6px;padding:6px 10px;cursor:pointer;color:white;
+  background:var(--accent);border:none;border-radius:6px;padding:6px 10px;cursor:pointer;color:white;
 }
 .search-box{flex:1;padding:6px;border-radius:6px;border:none;}
 
@@ -116,18 +123,14 @@ background:rgba(0,0,0,.6);color:white;border:none;border-radius:4px;
 .voice{
 display:flex;align-items:center;gap:6px;background:#1f2c33;border-radius:20px;padding:6px;margin-top:6px;
 }
-.voice button{
-background:none;border:none;color:#00a884;font-weight:bold;cursor:pointer;
-}
+.voice button{background:none;border:none;color:#00a884;font-weight:bold;cursor:pointer;}
 .voice input[type=range]{flex:1;}
 
 /* SEARCH RESULTS */
 .search-results{
 background:#111b21;max-height:200px;overflow-y:auto;border-radius:6px;margin-top:6px;color:#e9edef;
 }
-body.light .search-results{
-background:#ffffff; color:#111b21; 
-}
+body.light .search-results{background:#ffffff;color:#111b21;}
 .search-item{padding:6px;border-bottom:1px solid #202c33;cursor:pointer;}
 .search-item:hover{background:#202c33;}
 .highlight{outline:2px solid var(--accent);}
@@ -138,6 +141,12 @@ position:fixed;inset:0;background:black;display:none;align-items:center;justify-
 }
 .fullscreen img,.fullscreen video{max-width:100%;max-height:100%;}
 .exit{position:absolute;top:10px;right:10px;font-size:20px;color:white;}
+
+/* SCROLL BUTTONS */
+.scroll-btn{
+position:fixed;bottom:20px;right:20px;z-index:1001;
+background:var(--accent);color:white;border:none;padding:8px 12px;border-radius:6px;margin-left:6px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.3);
+}
 </style>
 </head>
 <body>
@@ -153,6 +162,11 @@ position:fixed;inset:0;background:black;display:none;align-items:center;justify-
 
   <div id="menu" class="dropdown">
     <input type="file" id="file" accept=".zip,.txt">
+    <div class="controls-row">
+      <button class="action" onclick="scrollToFirst()">⬆ First</button>
+      <button class="action" onclick="scrollToLast()">⬇ Last</button>
+      <button class="action" onclick="clearChat()">🗑 Clear Chat</button>
+    </div>
     <div class="controls-row">
       <input id="q" class="search-box" placeholder="Search messages">
       <button class="action" onclick="search()">🔍</button>
@@ -200,7 +214,22 @@ if(!menu.contains(e.target)&&!e.target.textContent.includes("☰"))
 menu.classList.remove("show");
 });
 
-/* SAVE/LOAD CHAT WITH MEDIA */
+/* SCROLL */
+function scrollToFirst(){bubbles[0]?.scrollIntoView({behavior:"smooth"});}
+function scrollToLast(){bubbles[bubbles.length-1]?.scrollIntoView({behavior:"smooth"});}
+
+/* CLEAR CHAT */
+function clearChat(){
+  if(!confirm("Clear all chats and media?")) return;
+  localStorage.removeItem("chatText");
+  localStorage.removeItem("chatMedia");
+  chat.innerHTML="";
+  bubbles=[];
+  totalMsgDiv.textContent="";
+  menu.classList.remove("show");
+}
+
+/* SAVE/LOAD CHAT */
 function saveChat(text, media){
   const mediaObj = {};
   const keys = Object.keys(media);
