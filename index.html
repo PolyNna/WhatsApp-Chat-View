@@ -11,90 +11,83 @@
 
 <style>
 :root{
---bg:#0b141a;--panel:#202c33;--sent:#005c4b;--recv:#202c33;
---text:#e9edef;--sub:#8696a0;--accent:#00a884;--btn:#ffffff;
+  --bg:#0b141a;--panel:#202c33;--sent:#005c4b;--recv:#202c33;
+  --text:#e9edef;--sub:#8696a0;--accent:#00a884;--btn:#ffffff;
 }
 .light{
---bg:#efeae2;--panel:#ffffff;--sent:#dcf8c6;--recv:#ffffff;
---text:#111b21;--sub:#667781;--btn:#111b21;
+  --bg:#efeae2;--panel:#ffffff;--sent:#dcf8c6;--recv:#ffffff;
+  --text:#111b21;--sub:#667781;--btn:#111b21;
 }
 body{
-margin:0;display:flex;justify-content:center;font-family:Segoe UI,Roboto,Arial;
-background:var(--bg);color:var(--text);
+  margin:0;display:flex;justify-content:center;font-family:Segoe UI,Roboto,Arial;
+  background:var(--bg);color:var(--text);overflow-x:hidden;
 }
 .app{
-width:100%;max-width:100%;height:100vh;display:flex;flex-direction:column;position:relative;
-box-sizing:border-box;padding:0 10px;transition:max-width 0.3s;
+  width:100%;max-width:100%;height:100vh;display:flex;flex-direction:column;
+  position:relative;box-sizing:border-box;padding:0 10px;transition:max-width 0.3s;
 }
 body.desktop .app {max-width:1024px;margin:0 auto;}
 
 /* HEADER */
 .header{
-background: rgba(32,44,51,0.85);
-backdrop-filter: blur(8px);
-padding:10px;display:flex;justify-content:space-between;align-items:center;position:relative;border-radius:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  width:100%;
+  box-sizing:border-box;
+  border-radius:0;
+  position:sticky;
+  top:0;
+  z-index:10;
+  font-weight:bold;
+  font-size:18px;
+  color:#00a884;
+  background:transparent;
+  backdrop-filter: blur(10px);
+  padding:10px;
 }
-.header button{
-background:none;border:none;font-size:20px;cursor:pointer;color:var(--btn);
-}
+.header button{background:none;border:none;font-size:20px;cursor:pointer;color:var(--btn);}
+#headerTitle{flex:1;padding-left:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
-/* MENU */
 .dropdown{
-position:absolute;top:56px;right:10px;width:320px;
-background: rgba(32,44,51,0.85);
-backdrop-filter: blur(8px);
-border-radius:10px;padding:10px;display:none;z-index:1000;
+  position:absolute;top:56px;right:10px;width:320px;
+  background:var(--panel);border-radius:10px;padding:10px;
+  display:none;z-index:1000;transition: background 0.3s;
 }
 .dropdown.show{display:block;}
+
 .controls-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
 button.action{
-background:var(--accent);border:none;border-radius:6px;padding:6px 10px;cursor:pointer;color:white;
+  background:var(--accent);border:none;border-radius:6px;padding:6px 10px;cursor:pointer;color:white;
 }
 .search-box{flex:1;padding:6px;border-radius:6px;border:none;}
 
 /* CHAT */
 .chat{
-flex:1;overflow-y:auto;padding:10px;background:var(--bg);
-background-size:cover;background-position:center;position:relative;
-max-width:600px;margin:0 auto;
+  flex:1;overflow-y:auto;padding:10px;background:var(--bg);background-size:cover;
+  background-position:center;position:relative;max-width:600px;margin:0 auto;display:flex;
+  flex-direction:column;gap:6px;
 }
-.chat::-webkit-scrollbar {width:8px;}
-.chat::-webkit-scrollbar-track {background: rgba(255,255,255,0.05); border-radius:4px;}
-.chat::-webkit-scrollbar-thumb {background: rgba(0,168,132,0.7); border-radius:4px;}
-
 .bubble{
-max-width:75%;margin:6px 0;padding:8px;border-radius:12px;display:flex;flex-direction:column;
-box-shadow:0 4px 8px rgba(0,0,0,0.2);opacity:0;transform:translateY(10px);
-animation: fadeIn 0.3s forwards;
+  max-width:75%;padding:10px;border-radius:16px;display:flex;flex-direction:column;
+  position:relative;box-shadow:0 1px 3px rgba(0,0,0,0.3);word-wrap:break-word;
 }
-@keyframes fadeIn{to{opacity:1;transform:translateY(0);}}
-
-.bubble.sent{
-margin-left:auto;
-background: linear-gradient(145deg, #00a884, #00775b);
-color:#fff;
-}
-.bubble.received{
-margin-right:auto;
-background: linear-gradient(145deg, #202c33, #2a3b44);
-color:#e9edef;
-}
-.sender{font-size:12px;font-weight:bold;color:#53bdeb;}
+.bubble.sent{align-self:flex-end;background:var(--sent);}
+.bubble.received{align-self:flex-start;background:var(--recv);}
+.sender{font-size:12px;font-weight:bold;color:#53bdeb;margin-bottom:2px;}
 .text{white-space:pre-wrap;}
 .time{font-size:11px;color:var(--sub);text-align:right;}
 .ticks{font-size:14px;color:#53bdeb;text-align:right;margin-top:2px;}
 
-/* DATE */
 .date{
-margin:10px auto;font-size:12px;padding:4px 10px;border-radius:10px;text-align:center;max-width:140px;
-box-shadow:0 1px 3px rgba(0,0,0,0.3);background:#111b21;color:#e9edef;
+  margin:10px auto;font-size:12px;padding:4px 10px;border-radius:10px;text-align:center;max-width:140px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.3);background:#111b21;color:#e9edef;
 }
 body.light .date{background:#ffffff;color:#111b21;}
 
-/* TOTAL MESSAGES */
 .total-messages{
-position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,0.4);padding:4px 8px;
-border-radius:6px;font-size:12px;color:white;
+  position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,0.4);
+  padding:4px 8px;border-radius:6px;font-size:12px;color:white;
 }
 
 /* MEDIA */
@@ -103,42 +96,34 @@ border-radius:6px;font-size:12px;color:white;
 .fs-btn{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.6);color:white;border:none;border-radius:4px;}
 .sticker{max-width:160px;margin-top:6px;}
 
-/* VOICE */
 .voice{display:flex;align-items:center;gap:6px;background:#1f2c33;border-radius:20px;padding:6px;margin-top:6px;}
 .voice button{background:none;border:none;color:#00a884;font-weight:bold;cursor:pointer;}
 .voice input[type=range]{flex:1;}
 
-/* SEARCH RESULTS */
 .search-results{
-background:#111b21;max-height:200px;overflow-y:auto;border-radius:6px;margin-top:6px;color:#e9edef;
+  background:#111b21;max-height:200px;overflow-y:auto;border-radius:6px;margin-top:6px;color:#e9edef;
 }
-body.light .search-results{background:#fff;color:#111b21;}
+body.light .search-results{background:#ffffff;color:#111b21;}
 .search-item{padding:6px;border-bottom:1px solid #202c33;cursor:pointer;}
 .search-item:hover{background:#202c33;}
 .highlight{outline:2px solid var(--accent);}
 
-/* FULLSCREEN */
 .fullscreen{
-position:fixed;inset:0;background:black;display:none;align-items:center;justify-content:center;z-index:9999;
+  position:fixed;inset:0;background:black;display:none;align-items:center;justify-content:center;z-index:9999;
 }
 .fullscreen img,.fullscreen video{max-width:100%;max-height:100%;}
 .exit{position:absolute;top:10px;right:10px;font-size:20px;color:white;}
 
-/* FLOATING SCROLL BUTTONS */
 .scroll-btn{
-position:fixed;right:20px;background:var(--accent);color:#fff;border:none;border-radius:50%;
-padding:10px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.3);
-font-size:18px;z-index:1001;transition:transform 0.2s;
+  position:fixed;bottom:20px;right:20px;z-index:1001;background:var(--accent);color:white;
+  border:none;padding:8px 12px;border-radius:6px;margin-left:6px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.3);
 }
-.scroll-btn:hover{transform:scale(1.1);}
-.scroll-btn.first{bottom:70px;}
-.scroll-btn.last{bottom:20px;}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
-    <span>WhatsApp Chat Viewer</span>
+    <span id="headerTitle">WhatsApp Chat Viewer</span>
     <div>
       <button onclick="toggleMode()">🌓</button>
       <button onclick="toggleDesktop()">🖥️</button>
@@ -148,7 +133,11 @@ font-size:18px;z-index:1001;transition:transform 0.2s;
 
   <div id="menu" class="dropdown">
     <input type="file" id="file" accept=".zip,.txt">
-    <button class="action" onclick="clearChat()">🗑 Clear Chat</button>
+    <div class="controls-row">
+      <button class="action" onclick="scrollToFirst()">⬆ First</button>
+      <button class="action" onclick="scrollToLast()">⬇ Last</button>
+      <button class="action" onclick="clearChat()">🗑 Clear Chat</button>
+    </div>
     <div class="controls-row">
       <input id="q" class="search-box" placeholder="Search messages">
       <button class="action" onclick="search()">🔍</button>
@@ -163,17 +152,14 @@ font-size:18px;z-index:1001;transition:transform 0.2s;
   <div id="totalMsg" class="total-messages"></div>
 </div>
 
-<!-- Floating Scroll Buttons -->
-<button class="scroll-btn first" onclick="scrollFirst()">⏮️</button>
-<button class="scroll-btn last" onclick="scrollLast()">⏭️</button>
-
 <input type="file" id="wallpaperPicker" accept="image/*" hidden>
 <div id="fs" class="fullscreen">
   <button class="exit" onclick="closeFS()">✕</button>
 </div>
 
 <script>
-let bubbles=[],currentAudio=null,currentBtn=null;
+let bubbles=[],currentAudio=null,currentBtn=null,currentVideo=null;
+let meName=null;
 const chat=document.getElementById("chat");
 const fs=document.getElementById("fs");
 const resultsDiv=document.getElementById("searchResults");
@@ -181,83 +167,83 @@ const menu=document.getElementById("menu");
 const totalMsgDiv=document.getElementById("totalMsg");
 
 /* DESKTOP MODE TOGGLE */
-let isDesktop = false;
-function toggleDesktop() {
-    isDesktop = !isDesktop;
-    if(isDesktop){
-        document.body.classList.add("desktop");
-        document.querySelector('meta[name="viewport"]').setAttribute("content","width=1024");
-    } else {
-        document.body.classList.remove("desktop");
-        document.querySelector('meta[name="viewport"]').setAttribute("content","width=device-width, initial-scale=1.0");
-    }
+let isDesktop=false;
+function toggleDesktop(){
+  isDesktop=!isDesktop;
+  if(isDesktop){
+    document.body.classList.add("desktop");
+    document.querySelector('meta[name="viewport"]').setAttribute("content","width=1024");
+  }else{
+    document.body.classList.remove("desktop");
+    document.querySelector('meta[name="viewport"]').setAttribute("content","width=device-width, initial-scale=1.0");
+  }
 }
 
 /* MENU */
 function toggleMenu(){menu.classList.toggle("show")}
 document.addEventListener("click",e=>{
-if(!menu.contains(e.target)&&!e.target.textContent.includes("☰"))
-menu.classList.remove("show");
+if(!menu.contains(e.target)&&!e.target.textContent.includes("☰"))menu.classList.remove("show");
 });
+
+/* SCROLL */
+function scrollToFirst(){bubbles[0]?.scrollIntoView({behavior:"smooth"});}
+function scrollToLast(){bubbles[bubbles.length-1]?.scrollIntoView({behavior:"smooth"});}
 
 /* CLEAR CHAT */
 function clearChat(){
-  if(!confirm("Clear all chats and media?")) return;
-  localStorage.removeItem("chatText");
-  localStorage.removeItem("chatMedia");
-  chat.innerHTML="";
-  bubbles=[];
-  totalMsgDiv.textContent="";
-  menu.classList.remove("show");
+if(!confirm("Clear all chats and media?")) return;
+localStorage.removeItem("chatText");
+localStorage.removeItem("chatMedia");
+chat.innerHTML="";
+bubbles=[];
+totalMsgDiv.textContent="";
+menu.classList.remove("show");
 }
 
-/* SAVE/LOAD CHAT WITH MEDIA */
+/* SAVE/LOAD CHAT */
 function saveChat(text, media){
-  const mediaObj = {};
-  const keys = Object.keys(media);
-  const promises = keys.map(k => fetch(media[k]).then(r=>r.blob()).then(blob=>{
-    return new Promise(res=>{
-      const reader = new FileReader();
-      reader.onload = ()=>{mediaObj[k] = reader.result; res();};
-      reader.readAsDataURL(blob);
-    });
-  }));
-  Promise.all(promises).then(()=>{
-    localStorage.setItem("chatText", text);
-    localStorage.setItem("chatMedia", JSON.stringify(mediaObj));
-  });
+const mediaObj={};
+const keys=Object.keys(media);
+const promises=keys.map(k=>fetch(media[k]).then(r=>r.blob()).then(blob=>{
+return new Promise(res=>{
+const reader=new FileReader();
+reader.onload=()=>{mediaObj[k]=reader.result; res();};
+reader.readAsDataURL(blob);
+});
+}));
+Promise.all(promises).then(()=>{localStorage.setItem("chatText", text);localStorage.setItem("chatMedia", JSON.stringify(mediaObj));});
 }
 function loadChat(){
-  const txt = localStorage.getItem("chatText");
-  const mediaStr = localStorage.getItem("chatMedia");
-  if(txt){
-    const media = mediaStr ? JSON.parse(mediaStr) : {};
-    render(txt, media);
-  }
+const txt=localStorage.getItem("chatText");
+const mediaStr=localStorage.getItem("chatMedia");
+if(txt){
+const media=mediaStr?JSON.parse(mediaStr):{};
+render(txt, media);
+}
 }
 
 /* FILE LOAD */
 document.getElementById("file").onchange=async e=>{
 const f=e.target.files[0];if(!f)return;
-if(f.name.endsWith(".txt")){render(await f.text(),{}); saveChat(await f.text(),{}); return;}
+if(f.name.endsWith(".txt")){render(await f.text(),{});saveChat(await f.text(),{});return;}
 const zip=await JSZip.loadAsync(f);let txt=null,media={};
 for(const p in zip.files){
 const n=p.split("/").pop();
 if(n.endsWith(".txt")) txt=await zip.files[p].async("string");
 else if(/\.(jpg|png|jpeg|webp|mp4|mp3|opus|ogg)$/i.test(n)){
-  const blob = await zip.files[p].async("blob");
-  media[n] = URL.createObjectURL(blob);
+const blob=await zip.files[p].async("blob");
+media[n]=URL.createObjectURL(blob);
 }
 }
-if(txt){render(txt,media); saveChat(txt, media);}
+if(txt){render(txt,media);saveChat(txt,media);}
 };
 
 /* FORMAT DATE */
 function formatDate(str){
-  const [m,d,y]=str.split("/").map(Number);
-  const fullYear = y < 100 ? 2000 + y : y;
-  const months=["January","February","March","April","May","June","July","August","September","October","November","December"];
-  return `${months[m-1]} ${d}, ${fullYear}`;
+const [m,d,y]=str.split("/").map(Number);
+const fullYear=y<100?2000+y:y;
+const months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+return `${months[m-1]} ${d}, ${fullYear}`;
 }
 
 /* RENDER */
@@ -266,25 +252,45 @@ chat.innerHTML="";bubbles=[];
 const lines=text.split(/\r?\n/);
 let cur=null,msgs=[];
 const r=/^(\d+\/\d+\/\d+),\s(\d+:\d+).*?- ([^:]+): (.*)$/;
-for(const l of lines){
-const m=l.match(r);
-if(m){if(cur)msgs.push(cur);cur={d:m[1],t:m[2],s:m[3],x:m[4]};}
-else if(cur)cur.x+="\n"+l;
-}
-if(cur)msgs.push(cur);
-const me=msgs[0]?.s;let last=null;
 
+for (const l of lines){
+const m=l.match(r);
+if(m){if(cur) msgs.push(cur); cur={d:m[1], t:m[2], s:m[3], x:m[4]};}
+else if(cur) cur.x+="\n"+l;
+}
+if(cur) msgs.push(cur);
+
+const participants=[...new Set(msgs.map(m=>m.s))];
+
+if(!meName){
+let sel=prompt(`Participants found: ${participants.join(", ")}\nEnter your name exactly:`,"");
+if(!participants.includes(sel)) sel=participants[0];
+meName=sel;
+}
+const other = participants.find(p=>p!==meName) || meName;
+document.getElementById("headerTitle").textContent = other;
+
+let last=null;
 msgs.forEach(m=>{
-if(m.d!==last){const d=document.createElement("div");d.className="date";d.textContent=formatDate(m.d);chat.appendChild(d);last=m.d;}
+if(m.d!==last){
+const d=document.createElement("div");
+d.className="date";
+d.textContent=formatDate(m.d);
+chat.appendChild(d);
+last=m.d;
+}
+
 const b=document.createElement("div");
-b.className="bubble "+(m.s===me?"sent":"received");
+b.className="bubble "+(m.s===meName?"sent":"received");
 b.innerHTML=`<div class="sender">${m.s}</div>
 <div class="text">${m.x}</div>
-${m.s===me?'<div class="ticks">✓✓</div>':""}
+${m.s===meName?'<div class="ticks">✓✓</div>':""}
 <div class="time">${m.t}</div>`;
+
 const f=m.x.match(/((IMG|VID|PTT|STK)-\d+-WA\d+\.\w+|\S+\.(jpg|png|jpeg|webp|mp4|mp3|opus|ogg))/i)?.[0];
-if(f&&media[f]){
-const w=document.createElement("div");w.className="media-wrap";
+if(f && media[f]){
+const w=document.createElement("div"); w.className="media-wrap";
+
 if(/\.(jpg|png|jpeg|webp)$/i.test(f))
 w.innerHTML=`<img class="media" src="${media[f]}" onclick="openFS(this)">
 <button class="fs-btn" onclick="openFS(this.previousElementSibling)">⛶</button>`;
@@ -293,38 +299,45 @@ const id="v"+Math.random();
 w.innerHTML=`<video id="${id}" class="media" src="${media[f]}" controls loop></video>
 <button class="fs-btn" onclick="openFS(this.previousElementSibling,true)">⛶</button>
 <button class="fs-btn" style="top:40px" onclick="videoSpeed('${id}',this)">1×</button>`;
+w.querySelector("video").addEventListener("play",()=>{
+if(currentVideo && currentVideo!==w.querySelector("video")) currentVideo.pause();
+if(currentAudio){currentAudio.pause(); currentBtn.textContent="▶"; currentAudio=null; currentBtn=null;}
+currentVideo=w.querySelector("video");
+});
 }
 else if(/\.(mp3|opus)$/i.test(f)){
 const id="a"+Math.random();
 w.innerHTML=`<div class="voice">
 <button onclick="togglePlay('${id}',this)">▶</button>
 <input type="range" min="0" step="0.1" oninput="seek('${id}',this)">
+<span class="time-display">0:00</span>
 <button onclick="speed('${id}',this)">1×</button>
 <audio id="${id}" src="${media[f]}" ontimeupdate="updateBar('${id}')"></audio>
 </div>`;
 }
 b.appendChild(w);
 }
-chat.appendChild(b);bubbles.push(b);
+chat.appendChild(b);
+bubbles.push(b);
 });
-
-/* TOTAL MESSAGES */
-totalMsgDiv.textContent = `Total Messages: ${msgs.length}`;
+totalMsgDiv.textContent=`Total Messages: ${msgs.length}`;
 }
 
-/* VOICE */
+/* AUDIO */
 function togglePlay(id,btn){
 const a=document.getElementById(id);
-if(currentAudio&&currentAudio!==a){currentAudio.pause();currentBtn.textContent="▶";}
-if(a.paused){a.play();btn.textContent="⏸";currentAudio=a;currentBtn=btn;}
+if(currentAudio && currentAudio!==a){currentAudio.pause();currentBtn.textContent="▶";}
+if(a.paused){a.play();btn.textContent="⏸";currentAudio=a;currentBtn=btn;if(currentVideo){currentVideo.pause(); currentVideo=null;}}
 else{a.pause();btn.textContent="▶";currentAudio=null;currentBtn=null;}
 }
 function seek(id,s){document.getElementById(id).currentTime=s.value;}
 function updateBar(id){
 const a=document.getElementById(id);
 const s=a.parentElement.querySelector("input");
-if(!s.max)s.max=a.duration;
+const t=a.parentElement.querySelector(".time-display");
+if(!s.max) s.max=a.duration;
 s.value=a.currentTime;
+if(t) t.textContent=`${Math.floor(a.currentTime/60)}:${Math.floor(a.currentTime%60).toString().padStart(2,"0")}`;
 }
 function speed(id,b){
 const a=document.getElementById(id);
@@ -370,11 +383,7 @@ document.getElementById("wallpaperPicker").onchange=e=>{
 chat.style.backgroundImage=`url(${URL.createObjectURL(e.target.files[0])})`;
 };
 
-/* SCROLL TO FIRST / LAST */
-function scrollFirst(){if(bubbles.length) bubbles[0].scrollIntoView({behavior:"smooth"});}
-function scrollLast(){if(bubbles.length) bubbles[bubbles.length-1].scrollIntoView({behavior:"smooth"});}
-
-/* LOAD CHAT ON START */
+/* LOAD CHAT */
 loadChat();
 </script>
 </body>
